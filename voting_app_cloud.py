@@ -186,6 +186,8 @@ else: # check session state, if session state is false all nested code will be r
     sunburst_df = df.groupby(['vote' , 'location']).size().reset_index()
     sunburst_df.columns = ['Proposal' , 'Location' , "Votes"]
     stacked_bar_fig = px.bar(sunburst_df, x="Proposal", y="Votes", color="Location", height=600,  text_auto=True)
+    stacked_bar_fig.update_layout(plot_bgcolor='#262730', legend = dict(bgcolor = '#262730'))
+
     st.plotly_chart(stacked_bar_fig, use_container_width=True) # disply the bar graph
     st.write("______________________")
 
@@ -204,6 +206,8 @@ else: # check session state, if session state is false all nested code will be r
     bar_fig.update_yaxes(title="Votes") # y axis title
     bar_fig.update_xaxes(title="") # x axis title
     st.plotly_chart(bar_fig, use_container_width=True) # disply the bar graph
+    bar_fig.update_layout(plot_bgcolor='#262730', legend = dict(bgcolor = '#262730'))
+
     st.write("______")
     #st.write(gb_vote_df)
 
