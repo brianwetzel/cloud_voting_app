@@ -58,31 +58,10 @@ if 'balloons_fired' not in st.session_state:
 
 ################ INITIALIZE VARIABLES ################
 
-# Web3 Connection
-w3 = Web3(Web3.HTTPProvider("HTTP://127.0.0.1:7545"))  # Local connection to Ganache blockchain
-accounts = w3.eth.accounts # The active accounts in Ganache session
-
 # Lists
 address_list = ["0x5E3c0ae41B4B8c70D10b376517C0CC7e4d37150c" , "0x658B07936e2f349C7c8E025d9F6ECeB8848BC2CE" , "0x5F2c48AFE1BeF0F1394BefBDB0D7822e1d583B02" , "0x9f801f9Fc343D2782D3c276361A3157FD036DC57" , "0x9eD64EBc9b06DF5f2dEb83b2E00fF12F1B6AAc05" , "0xee2bd6BeEe24f22c0253A5a2b2f27c6F40e44C37" , "0x90c6cBA31ECf29Acf5C439fa7AbD72a638B85Fb8" , "0x2F9002cb4d6C5b8A3f28A54390CFE8cA82E61813" , "0x7e517EA68A81F516ad44804844a9CbA305242197" , "0xFDC9DA12f141037181Ca5Bd29939068944A69cfD"]
 location_list = ["Austin, TX" , "Philadelphia, PA" , "Denver, CO" , "Seattle, WA"]
 proposals_list = ["Proposal 1 - Harm Reduction Program", "Proposal 2 - After School Program", "Proposal 3 - Clean Up"]
-
-
-##########################  CONTRACT FUNCTION  ##############################
-
-@st.cache(allow_output_mutation=True)  # Cache the contract on load
-def load_contract():  # Define the load_contract function
-    with open(Path('voting_dapp_abi.json')) as f: # Load ABI so it can talk to remix/contract
-        certificate_abi = json.load(f)
-    contract_address = "0x364E39421E0eE1f4703250F2cc2038FE1971d165"      # Set the contract address (this is the address of the deployed contract)
-    contract = w3.eth.contract(  # Get the contract, functin from web3.py
-        address=contract_address, # function requires address
-        abi=certificate_abi # function requires abi
-    )
-    return contract # Return the contract from the function
-
-contract = load_contract()  # Load the contract
-
 
 ########################  MAIN BODY HEADER  ###########################
 
@@ -121,15 +100,12 @@ elif st.session_state.voted == False:  # check session state, if session state i
 # CONFIRMATION - Page 3
 elif st.session_state.view_results == False: # check session state, if session state is false all nested code will be run/displayed
     try: #try the nested block of code.  if the blockchain kicks back an error, move on to 'except'.  This checks to see if the user has already voted
-        tx_hash = contract.functions.vote(st.session_state.proposal_index).transact({'from': st.session_state.address, 'gas': 1000000}) #function with data sent to solidity
+        ########################### vote ##########################
         b1, c1, b2 = st.columns([1,5,1]) # columns
         with c1: # middle columns
             st.write("## Your vote has been submitted!") # title
             st.image("images/yes.gif") # Zach Galifianakis gif
             st.info(f"Your vote for {proposals_list[st.session_state.proposal_index]} has been submitted") # message displaying which proposal was submitted
-            with st.expander("Block Explorer"): # expander container
-                tx_receipt = w3.eth.waitForTransactionReceipt(tx_hash) # transactin block data
-                st.write(tx_receipt) # display the block data
             st.markdown("#") # spacer
             if st.session_state.balloons_fired == False: # session state of the balloons
                 st.balloons() # fire the balloons
@@ -167,24 +143,24 @@ else: # check session state, if session state is false all nested code will be r
         st.experimental_rerun() # rerun the whole app so the display is updated
 
     # Creating dataframe to display our results
-    contract_list = [] #empty list to collect votes
-    for i in range(len(proposals_list)): # for loops runs through list of proposals
-        call = contract.functions.proposals(i).call() # call solidty contract to retrieve votes that were submitted
-        contract_list.append(call)  # append info from solidity to list
-    df = pd.DataFrame(contract_list, columns = ['Proposal','Votes']) # convert list into a dataframe
+    #contract_list = [] #empty list to collect votes
+    #for i in range(len(proposals_list)): # for loops runs through list of proposals
+    #    call = contract.functions.proposals(i).call() # call solidty contract to retrieve votes that were submitted
+    #    contract_list.append(call)  # append info from solidity to list
+    #df = pd.DataFrame(contract_list, columns = ['Proposal','Votes']) # convert list into a dataframe
 
     # Bar Chart - Total Vote by Proposal
-    bar_fig = px.bar(x=df.Proposal, y=df.Votes, color=df.Proposal) # initialize the bar graph
-    bar_fig.update_yaxes(title="Votes") # y axis title
-    bar_fig.update_xaxes(title="") # x axis title
-    st.markdown("### Votes per Proposal") # title
-    st.plotly_chart(bar_fig, use_container_width=True) # disply the bar graph
-    st.write("______________________")  # a line
+    #bar_fig = px.bar(x=df.Proposal, y=df.Votes, color=df.Proposal) # initialize the bar graph
+    #bar_fig.update_yaxes(title="Votes") # y axis title
+    #bar_fig.update_xaxes(title="") # x axis title
+    #st.markdown("### Votes per Proposal") # title
+    #st.plotly_chart(bar_fig, use_container_width=True) # disply the bar graph
+    #st.write("______________________")  # a line
 
     # Pie Chart
-    pie_fig = px.pie(df, values='Votes', names='Proposal')  # initialize the pie graph
-    st.plotly_chart(pie_fig, use_container_width=True) # display the pie graph
-    st.write("______________________") # a line
+    #pie_fig = px.pie(df, values='Votes', names='Proposal')  # initialize the pie graph
+    #st.plotly_chart(pie_fig, use_container_width=True) # display the pie graph
+    #st.write("______________________") # a line
     start_over_2 = st.button(" Start Over ")  # a start over button
     
     # Button to start over
