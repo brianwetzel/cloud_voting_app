@@ -7,11 +7,14 @@ from pathlib import Path
 import pandas as pd
 import plotly.express as px
 from google.cloud import firestore
+import string
+import random
 
 
 ##################  CONFIGURE PAGE ####################
 
 st.set_page_config(page_title = "Voting dApp", page_icon = "🗳️") # add title and emoji to tab in browser
+
 
 ################  INITIALIZE SESSION STATES ################
 
@@ -27,7 +30,7 @@ if 'view_results' not in st.session_state:
 
 # THINGS - important variable to remember and recall while using the app
 if 'address' not in st.session_state:
-    st.session_state.address = "no address"
+    st.session_state.address = "no address yet"
 
 if 'name' not in st.session_state:
     st.session_state.name = "no name"
@@ -37,6 +40,15 @@ if 'location' not in st.session_state:
 
 if 'vote' not in st.session_state:
     st.session_state.vote = 0
+
+
+
+################ INITIALIZE VARIABLES ################
+
+# Lists
+address_list = ["0x5E3c0ae41B4B8c70D10b376517C0CC7e4d37150c" , "0x658B07936e2f349C7c8E025d9F6ECeB8848BC2CE" , "0x5F2c48AFE1BeF0F1394BefBDB0D7822e1d583B02" , "0x9f801f9Fc343D2782D3c276361A3157FD036DC57" , "0x9eD64EBc9b06DF5f2dEb83b2E00fF12F1B6AAc05" , "0xee2bd6BeEe24f22c0253A5a2b2f27c6F40e44C37" , "0x90c6cBA31ECf29Acf5C439fa7AbD72a638B85Fb8" , "0x2F9002cb4d6C5b8A3f28A54390CFE8cA82E61813" , "0x7e517EA68A81F516ad44804844a9CbA305242197" , "0xFDC9DA12f141037181Ca5Bd29939068944A69cfD" , "0x288bbbF400af21984826bf96B1e99A917E58A782" , "0x58d351dCe3C7185440F7C3fc97d24589DaFCc79C" , "0x7101117B3e54B268cd72b9a6515B6187c1591E25" , "0xb2452E712C8EbA365557167aEf32116847eC1df9" , "0x1Da0D9f6bE493415Be0c2bE382b63686b78cfEfA" , "0xAAD74585fD6Aa8852f66a6df554578829BeD7Df1" , "0x096C8DDdF69Cf26e352c3f7E10dE33E8cf4291A8" , "0x8842b7bdA9103DD3d8B9A4300572B0DEE5743df7" , "0x819a87436C5C2791DBCa688A65C07670939BAF7A" , "0x3fCd769c5677992Cf78a056394C12531797e6f04" , "0x812e88f95611cb0c098a551F651E0a4CBF16e708" , "0x8B7D7741b45699e68F5B92b92FB971e4C7319554" , "0xAFcB1F327a476aED056E14abe64095b047E5F243" , "0x563D536fb1E9592a2b253366E7B85A38D523feA4" , "0xB824D32E32F2dCe71522200670FF07372Dd05b6b" , "0x7522c9B642202c232bBA28df9960770fa55D7428" , "0x84c4781903ea8a42Ef877281513D9AD89EaE7Cd2" , "0xDEb5d6DD2D3f83350b4168d8637804287CC3972D" , "0x703536f496454e412fB7fB734d358E4509Ae46AF" , "0x4Ff039EA966ee87b3188Fc56E5B19368dFFebf3C" , "0x9bf4F16d9159b1Ddd262BAc3199853fad597074B" , "0x8e1B5531d7c2727A4C4414C5b72F816d1367ccD2" , "0x7A8aab7142FE440eDd19011FFbaB5a113D82F6D1" , "0x8Fa21AB7287f19284f3f08dE85826a01F6e303ae" , "0x97889370f5334f32acE0C3b17a3B4cd0A2C22104" , "0x6fE130CeD7A5d38953E93e3292C2DF1bd8eA3Fc4" , "0x91daAfdCC633EDFdE5C2c2713F100BCBf96FE3Eb" , "0x578083B07BFc527F607ED94F5eb15f888Aa6Ae19" , "0x0B51d9494580a9c09b230612317e92E59aF66562" , "0xd2e071f86198a59a69132A5c87Fc0a2013a7d43d" ]
+location_list = ["Philadelphia Proper" , "Greater Philadelphia" , "Outside Philly Area"]
+proposals_list = ["P1 - Harm Reduction Program", "P2 - After School Program", "P3 - Clean Up"]
 
 
 ##################  INITIALIZE FIRESTORE  ####################
@@ -59,21 +71,12 @@ def write_to_db(address, name, location, proposal):
         "vote": proposal
     })
 
-# Create a reference to the Google post.
-   #doc_ref = db.collection("voting_app").document("votes")
-# Then get the data at that reference.
-   #doc = doc_ref.get()
-# Let's see what we got!
-   #st.write("The id is: ", doc.id)
-   #st.write("The contents are: ", doc.to_dict())
+
+# Address Minter Function
+#def id_generator(size=62, chars=string.ascii_uppercase + string.ascii_lowercase + string.digits):
+#    return f"0x{''.join(random.choice(chars) for _ in range(size))}"
 
 
-################ INITIALIZE VARIABLES ################
-
-# Lists
-address_list = ["0x5E3c0ae41B4B8c70D10b376517C0CC7e4d37150c" , "0x658B07936e2f349C7c8E025d9F6ECeB8848BC2CE" , "0x5F2c48AFE1BeF0F1394BefBDB0D7822e1d583B02" , "0x9f801f9Fc343D2782D3c276361A3157FD036DC57" , "0x9eD64EBc9b06DF5f2dEb83b2E00fF12F1B6AAc05" , "0xee2bd6BeEe24f22c0253A5a2b2f27c6F40e44C37" , "0x90c6cBA31ECf29Acf5C439fa7AbD72a638B85Fb8" , "0x2F9002cb4d6C5b8A3f28A54390CFE8cA82E61813" , "0x7e517EA68A81F516ad44804844a9CbA305242197" , "0xFDC9DA12f141037181Ca5Bd29939068944A69cfD"]
-location_list = ["Center City Philly" , "South Philly" , "North Philly" , "West Philly" , "Greater Philadelphia" , "Outside Philadelphia Area"]
-proposals_list = ["P1 - Harm Reduction Program", "P2 - After School Program", "P3 - Clean Up"]
 
 ########################  MAIN BODY HEADER  ###########################
 
@@ -82,13 +85,19 @@ st.image("images/serve_community_blue.png")  # Subtitle image
 st.write("______________________")  # a line
 
 
-########################  VIEW FIRESTORE DATAFRAME  ############################
-
-#st.write(df)
-#st.write("______________________")  # a line
-
-
 ########################  PAGES  ###########################
+
+#st.write("### Mint Your Own Address") # Title
+#st.write("Mint a new address, then copy and paste below to verify")
+#mint_button = st.button("Mint New Address")
+#if mint_button:
+#    st.session_state.address = id_generator()
+#    address_list.append(st.session_state.address)
+#    st.experimental_rerun()
+#st.write(st.session_state.address)
+#st.markdown("#")
+#st.markdown("#")
+
 
 ####  VERIFY ADDRESS - Page 1  ###
 if st.session_state.verified == False: # check session state, if session state is false all nested code will be run/displayed
