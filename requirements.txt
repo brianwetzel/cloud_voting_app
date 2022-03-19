@@ -1,5 +1,4 @@
 streamlit==1.7.0
-json5 @ file:///tmp/build/80754af9/json5_1624432770122/work
 jsonschema @ file:///Users/ktietz/demo/mc3/conda-bld/jsonschema_1630511932244/work
 ujson @ file:///opt/concourse/worker/volumes/live/b4182deb-c6ce-4bc8-7783-61027c162049/volume/ujson_1611259506235/work
 web3==5.25.0
