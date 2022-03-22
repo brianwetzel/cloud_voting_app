@@ -1,15 +1,11 @@
-from dataclasses import dataclass
 import streamlit as st
-import os
 import json
-from web3 import Web3
-from pathlib import Path
 import pandas as pd
 import plotly.express as px
 from google.cloud import firestore
+from google.oauth2 import service_account
 import string
 import random
-
 
 ##################  CONFIGURE PAGE ####################
 
@@ -19,6 +15,7 @@ st.set_page_config(page_title = "Voting dApp", page_icon = "🗳️") # add titl
 ################  INITIALIZE SESSION STATES ################
 
 # PAGES - allows us to control which 'page' the user is on base on the steps they've completed
+
 if 'verified' not in st.session_state:
     st.session_state.verified = False 
 
@@ -54,7 +51,16 @@ proposals_list = ["P1 - Harm Reduction Program", "P2 - After School Program", "P
 ##################  INITIALIZE FIRESTORE  ####################
 
 # Connect to Firestore client - authenticate with json file
-db = firestore.Client.from_service_account_json("firestore_key.json") 
+# db = firestore.Client.from_service_account_json("firestore_key.json") # This line allows us to connect with the client, but our credentials are exposed and not secure
+
+
+import json
+key_dict = json.loads(st.secrets["textkey"])
+creds = service_account.Credentials.from_service_account_info(key_dict)
+db = firestore.Client(credentials=creds, project="votingappcloud")
+
+
+
 
 # Read Database - Covert to Dataframe
 votes = list(db.collection(u'voting_app').stream()) # stream data and store in votes
@@ -87,20 +93,26 @@ st.write("______________________")  # a line
 
 ########################  PAGES  ###########################
 
-#st.write("### Mint Your Own Address") # Title
-#st.write("Mint a new address, then copy and paste below to verify")
-#mint_button = st.button("Mint New Address")
-#if mint_button:
-#    st.session_state.address = id_generator()
-#    address_list.append(st.session_state.address)
-#    st.experimental_rerun()
-#st.write(st.session_state.address)
-#st.markdown("#")
-#st.markdown("#")
-
 
 ####  VERIFY ADDRESS - Page 1  ###
 if st.session_state.verified == False: # check session state, if session state is false all nested code will be run/displayed
+    
+    #st.write("### Mint Address") # Title
+    #c1, c2 = st.columns([1,3])
+    #with c1:
+    #    mint_button = st.button("Mint New Address")
+    #    if mint_button:
+    #        st.session_state.address = id_generator()
+    #        address_list.append(st.session_state.address)
+    #        st.experimental_rerun()
+    #with c2:
+    #    st.write("Mint a new address, then copy and paste below to verify")
+    #st.info(st.session_state.address)    
+    #st.write("___")
+    #st.markdown("#")
+    #st.markdown("#")
+
+
     st.write("### Verify Your Address") # Title
     address = st.text_input("Input your wallet address to verify your are eligible to vote") # Create the variable 'address' and saves the text input from the user in it
     ss_verified = st.button("Verify Address") # Initialize the Verify button
@@ -224,30 +236,6 @@ else: # check session state, if session state is false all nested code will be r
         st.session_state.verified = False  # update session state to false
         st.session_state.view_results = False  # update session state to false
         st.experimental_rerun() # rerun the whole app so the display is updated
-
-
-
-
-    # Pie Chart
-    #pie_fig = px.pie(df, values='Votes', names='Proposal')  # initialize the pie graph
-    #st.plotly_chart(pie_fig, use_container_width=True) # display the pie graph
-    #st.write("______________________") # a line
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 ########################  Sidebar ###########################
