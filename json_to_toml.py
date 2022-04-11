@@ -1,5 +1,7 @@
 import toml
 
+# To run this script: Navigate to the correct folder in your terminal and enter "python json_to_toml.py" and hit enter
+
 output_file = ".streamlit/secrets.toml"
 
 with open("firestore-key.json") as json_file:
