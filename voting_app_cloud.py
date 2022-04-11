@@ -53,8 +53,6 @@ proposals_list = ["P1 - Harm Reduction Program", "P2 - After School Program", "P
 # Connect to Firestore client - authenticate with json file
 # db = firestore.Client.from_service_account_json("firestore_key.json") # This line allows us to connect with the client, but our credentials are exposed and not secure
 
-
-import json
 key_dict = json.loads(st.secrets["textkey"])
 creds = service_account.Credentials.from_service_account_info(key_dict)
 db = firestore.Client(credentials=creds, project="votingappcloud")
